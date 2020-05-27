@@ -6,7 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -43,35 +47,46 @@ public class GridViewAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-     ViewHolder viewHolder;
+        ViewHolder viewHolder;
 
-     if(convertView == null){
+        if (convertView == null) {
 
-         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-         convertView = inflater.inflate(R.layout.activity_main2,parent,false);
-         viewHolder = new ViewHolder(convertView);
-         convertView.setTag(viewHolder);
-     }
-     else{
-         viewHolder = (ViewHolder) convertView.getTag();
-     }
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.card, parent, false);
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
 
-     viewHolder.imageView.setDefaultImageResId(R.drawable.ic_launcher_foreground);
-     viewHolder.imageView.setErrorImageResId(R.drawable.ic_launcher_background);
-     viewHolder.imageView.setAdjustViewBounds(true);
+        viewHolder.imageView.setDefaultImageResId(R.drawable.ic_launcher_foreground);
+        viewHolder.imageView.setErrorImageResId(R.drawable.ic_launcher_background);
+        viewHolder.imageView.setAdjustViewBounds(true);
+        viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Constants.deleteList.add(firebaseImages.get(position));
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(400,400);
+                } else {
+                    Constants.deleteList.remove(new String(firebaseImages.get(position)));
+                }
 
-        viewHolder.imageView.setImageUrl(firebaseImages.get(position),imageLoader);
-        viewHolder.imageView.setLayoutParams(layoutParams);
 
-        viewHolder.imageView.setImageUrl(firebaseImages.get(position),imageLoader);
+            }
+        });
+
+
+        viewHolder.imageView.setImageUrl(firebaseImages.get(position), imageLoader);
+
+
+        viewHolder.imageView.setImageUrl(firebaseImages.get(position), imageLoader);
 
         viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context,Main2Activity.class);
-                intent.putExtra("firebaseImage",firebaseImages.get(position));
+                Intent intent = new Intent(context, Main2Activity.class);
+                intent.putExtra("firebaseImage", firebaseImages.get(position));
                 context.startActivity(intent);
             }
         });
@@ -79,11 +94,15 @@ public class GridViewAdapter extends BaseAdapter {
         return convertView;
     }
 
-    class ViewHolder{
+    class ViewHolder {
         NetworkImageView imageView;
+        CheckBox checkBox;
 
-        ViewHolder (View view){
+
+        ViewHolder(View view) {
+
             imageView = view.findViewById(R.id.image);
+            checkBox = view.findViewById(R.id.checkbox);
         }
     }
 }

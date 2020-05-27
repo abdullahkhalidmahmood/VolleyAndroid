@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     GridView gridView;
     ArrayList<String> firebaseImages = new ArrayList<>();
+    ImageButton delete;
     GridViewAdapter gridViewAdapter;
     ImageLoader imageLoader;
 
@@ -38,10 +41,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         gridView = findViewById(R.id.gridView);
+        delete = findViewById(R.id.delete);
         imagesfromFirebase();
 
         imageLoader = MySingleton.getInstance(this).getImageLoader();
 
+        setUpAdapter();
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               deleteImages();
+            }
+        });
+    }
+
+    private void deleteImages() {
+        firebaseImages.removeAll(Constants.deleteList);
+
+        setUpAdapter();
+    }
+
+    private void setUpAdapter() {
         gridViewAdapter = new GridViewAdapter(this, firebaseImages, imageLoader);
         gridView.setAdapter(gridViewAdapter);
     }
